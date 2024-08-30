@@ -7,10 +7,11 @@ requires-python = ">=3.11"
 dependencies = [
     "loguru>=0.7.2",
     "lxml>=5.3.0",
+    "click>=8.1.7",
 ]
 
 [project.scripts]
-generate = "nem12_tools:hello"
+generate = "nem12_tools.cli:generate"
 
 [build-system]
 requires = ["hatchling"]

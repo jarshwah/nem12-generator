@@ -4,14 +4,10 @@ import json
 import os
 import random
 from datetime import datetime, timedelta, timezone
-from zipfile import ZipFile
 
-import generate_mdmt_xml as mdmt
 from loguru import logger
 
-# ToDo fix the input directories to look for the in and out folders relative to the script
-INPUT_DIRECTORY = r"C:/Users/NUGEP1/OneDrive - Alinta Servco/Dev/MeterData/in/"
-OUTPUT_DIRECTORY = r"C:/Users/NUGEP1/OneDrive - Alinta Servco/Dev/MeterData/out/"
+from . import notifications as mdmt
 
 map_number_of_intervals = {
     # key = minutes | #value = intervals
@@ -21,17 +17,15 @@ map_number_of_intervals = {
 }
 
 
-# Zip the csv file
-def create_zip_file(filename: str):
-    filename_without_extension = filename[:-4]
-    zip_filename = filename_without_extension + ".zip"
-    zip_obj = ZipFile(zip_filename, "w")
-    zip_obj.write(filename)
-    zip_obj.close()
-
-
 class read_meter_data_csv_config:
-    def __init__(self, directory=None, filename=None, meter_data_config_row=None):
+    def __init__(
+        self,
+        output_file: str | None = None,
+        directory=None,
+        filename=None,
+        meter_data_config_row=None,
+    ):
+        self.output_file = output_file
         self.directory = directory
         self.filename = filename
         self.meter_data_csv_row = meter_data_config_row
@@ -452,20 +446,15 @@ class generate_meter_data_file(validate_meter_data_file, read_meter_data_csv_con
                 csv_interval_data=meter_data_values,
                 participant_role="FRMP",
             )
-            meter_data_file.write_xml(
-                output_filename=self.nem_mdmt_filename,
-                output_directory=OUTPUT_DIRECTORY,
+            meter_data_file.write_xml(self.output_file)
+
+
+def generate_nem12(input_file_name: str, output_file_name: str) -> None:
+    with open(input_file_name, "r", newline="") as input_csv:
+        reader = csv.reader(input_csv, delimiter=",")
+        next(reader, None)  # skips header row if not required.
+        for meter_data_config in reader:
+            test = generate_meter_data_file(
+                output_file=output_file_name, meter_data_config_row=meter_data_config
             )
-
-            create_zip_file(self.nem_mdmt_filename)
-
-
-meter_data_csv = "md_test.csv"
-input_file_name = INPUT_DIRECTORY + meter_data_csv
-
-with open(input_file_name, "r", newline="") as input_csv:
-    reader = csv.reader(input_csv, delimiter=",")
-    next(reader, None)  # skips header row if not required.
-    for item, meter_data_config in enumerate(reader, 1):
-        test = generate_meter_data_file(meter_data_config_row=meter_data_config)
-        test.generate_nem12_records()
+            test.generate_nem12_records()

@@ -1,7 +1,5 @@
-import os
 from xml.etree import ElementTree as ET
 
-from loguru import logger
 from lxml import etree
 
 
@@ -119,17 +117,10 @@ class meter_data_notification:
       </Transactions>
       """
 
-    def write_xml(self, output_filename, output_directory):
-        if os.path.exists(output_directory):
-            os.chdir(output_directory)
-            if output_filename is not None:
-                self.tree.write(
-                    output_filename,
-                    pretty_print=True,
-                    xml_declaration=True,
-                    encoding="utf-8",
-                )
-            else:
-                logger.info("No filename provided")
-        else:
-            logger.info(f"No path exists for{output_directory}")
+    def write_xml(self, output_filename: str):
+        self.tree.write(
+            output_filename,
+            pretty_print=True,
+            xml_declaration=True,
+            encoding="utf-8",
+        )
