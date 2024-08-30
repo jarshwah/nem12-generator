@@ -1,5 +1,5 @@
 [project]
-name = "nem12-generator"
+name = "nem12_tools"
 version = "0.1.0"
 description = "Generate NEM12 files for testing"
 readme = "README.md"
@@ -7,8 +7,10 @@ requires-python = ">=3.11"
 dependencies = [
     "loguru>=0.7.2",
     "lxml>=5.3.0",
-    "pyright>=1.1.378",
 ]
+
+[project.scripts]
+generate = "nem12_tools:hello"
 
 [build-system]
 requires = ["hatchling"]
@@ -17,6 +19,7 @@ build-backend = "hatchling.build"
 [tool.uv]
 dev-dependencies = [
     "ruff>=0.6.3",
+    "pyright>=1.1.378",
 ]
 
 [tool.pyright]

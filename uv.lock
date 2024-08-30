@@ -83,17 +83,17 @@ wheels = [
 ]
 
 [[package]]
-name = "nem12-generator"
+name = "nem12-tools"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "loguru" },
     { name = "lxml" },
-    { name = "pyright" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "pyright" },
     { name = "ruff" },
 ]
 
@@ -101,11 +101,13 @@ dev = [
 requires-dist = [
     { name = "loguru", specifier = ">=0.7.2" },
     { name = "lxml", specifier = ">=5.3.0" },
-    { name = "pyright", specifier = ">=1.1.378" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.6.3" }]
+dev = [
+    { name = "pyright", specifier = ">=1.1.378" },
+    { name = "ruff", specifier = ">=0.6.3" },
+]
 
 [[package]]
 name = "nodeenv"
