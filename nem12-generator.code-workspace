@@ -1,0 +1,35 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "[python]": {
+            "editor.formatOnPaste": false,
+            "editor.formatOnSaveMode": "file",
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.fixAll.ruff": "explicit",
+                "source.organizeImports.ruff": "explicit"
+            },
+            "editor.defaultFormatter": "charliermarsh.ruff",
+        },
+        "ruff.organizeImports": true,
+        "python.analysis.logLevel": "Information",
+        "python.analysis.useLibraryCodeForTypes": true,
+        "python.analysis.completeFunctionParens": true,
+        "python.analysis.autoFormatStrings": true,
+        "python.analysis.gotoDefinitionInStringLiteral": true,
+        "python.analysis.enablePytestSupport": true,
+        "python.analysis.persistAllIndices": true,
+        "editor.stickyScroll.enabled": true,
+        "editor.formatOnPaste": true,
+        "editor.bracketPairColorization.enabled": true,
+        "search.quickOpen.history.filterSortOrder": "recency",
+        "workbench.localHistory.enabled": true,
+        "workbench.editor.limit.enabled": true,
+        "workbench.editor.limit.perEditorGroup": true,
+        "workbench.editor.limit.value": 10,
+    }
+}

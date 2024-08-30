@@ -1,0 +1,28 @@
+[project]
+name = "nem12-generator"
+version = "0.1.0"
+description = "Generate NEM12 files for testing"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "loguru>=0.7.2",
+    "lxml>=5.3.0",
+    "pyright>=1.1.378",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.6.3",
+]
+
+[tool.pyright]
+include = ["src"]
+exclude = [
+    "**/__pycache__",
+]
+reportMissingImports = "error"
+pythonVersion = "3.11"
