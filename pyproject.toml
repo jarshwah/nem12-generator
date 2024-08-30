@@ -21,6 +21,9 @@ build-backend = "hatchling.build"
 dev-dependencies = [
     "ruff>=0.6.3",
     "pyright>=1.1.378",
+    "ipython>=8.27.0",
+    "ipdb>=0.13.13",
+    "pytest>=8.3.2",
 ]
 
 [tool.pyright]

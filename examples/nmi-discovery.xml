@@ -1,0 +1,181 @@
+<?xml version="1.0" ?>
+<ase:aseXML xmlns:ase="urn:aseXML:r44"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:aseXML:r44 http://www.nemmco.com.au/aseXML/schemas/r44/aseXML_r44.xsd">
+    <Header>
+        <From description="Australian Energy Market Operator Limited">NEMMCO</From>
+        <To description="Sun Retail Pty Ltd">ENERGEX</To>
+        <MessageID>NEMMCO-MSG-1323430745</MessageID>
+        <MessageDate>2024-08-30T22:33:28+10:00</MessageDate>
+        <TransactionGroup>NMID</TransactionGroup>
+        <Priority>High</Priority>
+        <SecurityContext>NEMMCOBATCH</SecurityContext>
+        <Market>NEM</Market>
+    </Header>
+    <Transactions>
+        <Transaction transactionID="NMID-1323430745" transactionDate="2024-08-30T22:33:28+10:00" initiatingTransactionID="4102335210_a09143c1a9b9">
+            <NMIStandingDataResponse version="r39">
+                <NMIStandingData xsi:type="ase:ElectricityStandingData" version="r43">
+                    <NMI>4102335210</NMI>
+                    <MasterData>
+                        <JurisdictionCode>NSW</JurisdictionCode>
+                        <NMIClassificationCode>SMALL</NMIClassificationCode>
+                        <TransmissionNodeIdentifier>NORB</TransmissionNodeIdentifier>
+                        <DistributionLossFactorCode>JL40</DistributionLossFactorCode>
+                        <Address>
+                            <StructuredAddress>
+                                <House>
+                                    <HouseNumber>150</HouseNumber>
+                                </House>
+                                <Street>
+                                    <StreetName>TRAFALGAR</StreetName>
+                                    <StreetType>AVE</StreetType>
+                                </Street>
+                            </StructuredAddress>
+                            <SuburbOrPlaceOrLocality>UMINA</SuburbOrPlaceOrLocality>
+                            <StateOrTerritory>NSW</StateOrTerritory>
+                            <PostCode>2257</PostCode>
+                            <DeliveryPointIdentifier>56297341</DeliveryPointIdentifier>
+                            <GNAFPID>GANSW706437148</GNAFPID>
+                        </Address>
+                        <Status>A</Status>
+                        <CustomerClassificationCode>RESIDENTIAL</CustomerClassificationCode>
+                        <CustomerThresholdCode>LOW</CustomerThresholdCode>
+                        <SharedIsolationPointFlag>N</SharedIsolationPointFlag>
+                        <ConnectionConfiguration>L1</ConnectionConfiguration>
+                    </MasterData>
+
+                    <RoleAssignments>
+                        <RoleAssignment>
+                            <Party>ACTIVMDP</Party>
+                            <Role>MDP</Role>
+                        </RoleAssignment>
+                        <RoleAssignment>
+                            <Party>ACTIVMDP</Party>
+                            <Role>MPC</Role>
+                        </RoleAssignment>
+                        <RoleAssignment>
+                            <Party>ENERGYAP</Party>
+                            <Role>LNSP</Role>
+                        </RoleAssignment>
+                        <RoleAssignment>
+                            <Party>ORIGINMC</Party>
+                            <Role>RP</Role>
+                        </RoleAssignment>
+                        <RoleAssignment>
+                            <Party>TCAMP</Party>
+                            <Role>MPB</Role>
+                        </RoleAssignment>
+                    </RoleAssignments>
+
+                    <DataStreams>
+                        <DataStream>
+                            <Suffix>11</Suffix>
+                            <ProfileName>NSLP</ProfileName>
+                            <AveragedDailyLoad>40</AveragedDailyLoad>
+                            <DataStreamType>Consumption</DataStreamType>
+                            <Status>I</Status>
+                        </DataStream>
+                        <DataStream>
+                            <Suffix>E1</Suffix>
+                            <ProfileName>NOPROF</ProfileName>
+                            <AveragedDailyLoad>40</AveragedDailyLoad>
+                            <DataStreamType>Interval</DataStreamType>
+                            <Status>A</Status>
+                        </DataStream>
+                    </DataStreams>
+
+                    <MeterRegister>
+                        <Meter>
+                            <SerialNumber>019284</SerialNumber>
+                            <NextScheduledReadDate>2015-12-25</NextScheduledReadDate>
+                            <InstallationTypeCode>BASIC</InstallationTypeCode>
+                            <ReadTypeCode>MV3</ReadTypeCode>
+                            <Status>R</Status>
+                        </Meter>
+                        <Meter>
+                            <SerialNumber>045295</SerialNumber>
+                            <NextScheduledReadDate>2024-03-27</NextScheduledReadDate>
+                            <InstallationTypeCode>BASIC</InstallationTypeCode>
+                            <ReadTypeCode>MV3</ReadTypeCode>
+                            <Status>R</Status>
+                            <GPSCoordinates>
+                                <Latitude>-33.511251</Latitude>
+                                <Longitude>151.322946</Longitude>
+                            </GPSCoordinates>
+                        </Meter>
+                        <Meter>
+                            <SerialNumber>701226207</SerialNumber>
+                            <InstallationTypeCode>COMMS4D</InstallationTypeCode>
+                            <ReadTypeCode>RWDA</ReadTypeCode>
+                            <Status>C</Status>
+                            <GPSCoordinates>
+                                <Latitude>-33.511159</Latitude>
+                                <Longitude>151.322942</Longitude>
+                            </GPSCoordinates>
+                        </Meter>
+
+
+
+                        <Meter>
+                            <SerialNumber>019284</SerialNumber>
+                            <RegisterConfiguration>
+                                <Register>
+                                    <RegisterID>1</RegisterID>
+                                    <NetworkTariffCode>EA010</NetworkTariffCode>
+                                    <UnitOfMeasure>KWH</UnitOfMeasure>
+                                    <TimeOfDay>ALLDAY</TimeOfDay>
+                                    <Multiplier>1</Multiplier>
+                                    <DialFormat>5</DialFormat>
+                                    <Suffix>11</Suffix>
+                                    <ControlledLoad>NO</ControlledLoad>
+                                    <Status>R</Status>
+                                </Register>
+                            </RegisterConfiguration>
+                        </Meter>
+                        <Meter>
+                            <SerialNumber>701226207</SerialNumber>
+                            <RegisterConfiguration>
+                                <Register>
+                                    <RegisterID>E1</RegisterID>
+                                    <NetworkTariffCode>EA025</NetworkTariffCode>
+                                    <UnitOfMeasure>KWH</UnitOfMeasure>
+                                    <TimeOfDay>INTERVAL</TimeOfDay>
+                                    <Multiplier>1</Multiplier>
+                                    <DialFormat>9.5</DialFormat>
+                                    <Suffix>E1</Suffix>
+                                    <ControlledLoad>NO</ControlledLoad>
+                                    <Status>C</Status>
+                                </Register>
+                            </RegisterConfiguration>
+                        </Meter>
+                        <Meter>
+                            <SerialNumber>045295</SerialNumber>
+                            <RegisterConfiguration>
+                                <Register>
+                                    <RegisterID>1</RegisterID>
+                                    <NetworkTariffCode>EA010</NetworkTariffCode>
+                                    <UnitOfMeasure>KWH</UnitOfMeasure>
+                                    <TimeOfDay>ALLDAY</TimeOfDay>
+                                    <Multiplier>1</Multiplier>
+                                    <DialFormat>6</DialFormat>
+                                    <Suffix>11</Suffix>
+                                    <ControlledLoad>NO</ControlledLoad>
+                                    <Status>R</Status>
+                                </Register>
+                            </RegisterConfiguration>
+                        </Meter>
+                    </MeterRegister>
+                </NMIStandingData>
+                <PreviousReadDates>
+                    <Event severity="Warning">
+                        <Code>1021</Code>
+                        <Explanation>Not applicable</Explanation>
+                    </Event>
+                </PreviousReadDates>
+                <Event severity="Information">
+                    <Code>0</Code>
+                </Event>
+            </NMIStandingDataResponse>
+        </Transaction>
+    </Transactions>
+</ase:aseXML>

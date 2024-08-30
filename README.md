@@ -11,6 +11,13 @@ This project takes a meter configuration and generates NEM12 files.
 4. Install: `uv sync`
 
 
+## Tests
+
+```sh
+uv run pytest tests
+```
+
+
 ## Usage
 
 ```sh
