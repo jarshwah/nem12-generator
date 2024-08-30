@@ -107,7 +107,7 @@ class meter_data_notification:
         self.trans_participant_role.text = participant_role
 
         """
-      Transactions>
+      <Transactions>
         <Transaction transactionID="MTRD_MSG_NEM12_202112271020" transactionDate="2021-12-27T10:20:05.000+10:00">
           <MeterDataNotification version="r25">
             <CSVIntervalData>

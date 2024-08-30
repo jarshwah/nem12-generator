@@ -1,7 +1,7 @@
 version = 1
 requires-python = ">=3.11"
 
-[[distribution]]
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -10,7 +10,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6", size = 25335 },
 ]
 
-[[distribution]]
+[[package]]
 name = "loguru"
 version = "0.7.2"
 source = { registry = "https://pypi.org/simple" }
@@ -23,7 +23,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/03/0a/4f6fed21aa246c6b49b561ca55facacc2a44b87d65b8b92362a8e99ba202/loguru-0.7.2-py3-none-any.whl", hash = "sha256:003d71e3d3ed35f0f8984898359d65b79e5b21943f78af86aa5491210429b8eb", size = 62549 },
 ]
 
-[[distribution]]
+[[package]]
 name = "lxml"
 version = "5.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -82,7 +82,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/db/214290d58ad68c587bd5d6af3d34e56830438733d0d0856c0275fde43652/lxml-5.3.0-cp313-cp313-win_amd64.whl", hash = "sha256:406246b96d552e0503e17a1006fd27edac678b3fcc9f1be71a2f94b4ff61528d", size = 3814417 },
 ]
 
-[[distribution]]
+[[package]]
 name = "nem12-generator"
 version = "0.1.0"
 source = { editable = "." }
@@ -92,12 +92,22 @@ dependencies = [
     { name = "pyright" },
 ]
 
-[distribution.dev-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "ruff" },
 ]
 
-[[distribution]]
+[package.metadata]
+requires-dist = [
+    { name = "loguru", specifier = ">=0.7.2" },
+    { name = "lxml", specifier = ">=5.3.0" },
+    { name = "pyright", specifier = ">=1.1.378" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.6.3" }]
+
+[[package]]
 name = "nodeenv"
 version = "1.9.1"
 source = { registry = "https://pypi.org/simple" }
@@ -106,7 +116,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/1d/1b658dbd2b9fa9c4c9f32accbfc0205d532c8c6194dc0f2a4c0428e7128a/nodeenv-1.9.1-py2.py3-none-any.whl", hash = "sha256:ba11c9782d29c27c70ffbdda2d7415098754709be8a7056d79a737cd901155c9", size = 22314 },
 ]
 
-[[distribution]]
+[[package]]
 name = "pyright"
 version = "1.1.378"
 source = { registry = "https://pypi.org/simple" }
@@ -118,7 +128,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/38/c6/f0d4bc20c13b20cecfbf13c699477c825e45767f1dc5068137323f86e495/pyright-1.1.378-py3-none-any.whl", hash = "sha256:8853776138b01bc284da07ac481235be7cc89d3176b073d2dba73636cb95be79", size = 18222 },
 ]
 
-[[distribution]]
+[[package]]
 name = "ruff"
 version = "0.6.3"
 source = { registry = "https://pypi.org/simple" }
@@ -143,7 +153,7 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/63/28/ae4ffe7d3b6134ca6d31ebef07447ef70097c4a9e8fbbc519b374c5c1559/ruff-0.6.3-py3-none-win_arm64.whl", hash = "sha256:14a9528a8b70ccc7a847637c29e56fd1f9183a9db743bbc5b8e0c4ad60592a82", size = 8229171 },
 ]
 
-[[distribution]]
+[[package]]
 name = "win32-setctime"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }

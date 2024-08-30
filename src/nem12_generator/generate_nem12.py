@@ -6,9 +6,8 @@ import random
 from datetime import datetime, timedelta, timezone
 from zipfile import ZipFile
 
+import generate_mdmt_xml as mdmt
 from loguru import logger
-
-from . import generate_mdmt_xml as mdmt
 
 # ToDo fix the input directories to look for the in and out folders relative to the script
 INPUT_DIRECTORY = r"C:/Users/NUGEP1/OneDrive - Alinta Servco/Dev/MeterData/in/"

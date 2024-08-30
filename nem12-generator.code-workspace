@@ -23,6 +23,8 @@
         "python.analysis.gotoDefinitionInStringLiteral": true,
         "python.analysis.enablePytestSupport": true,
         "python.analysis.persistAllIndices": true,
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "python.terminal.activateEnvironment": true,
         "editor.stickyScroll.enabled": true,
         "editor.formatOnPaste": true,
         "editor.bracketPairColorization.enabled": true,

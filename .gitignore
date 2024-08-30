@@ -39,3 +39,4 @@ docs/_static
 
 # Ctags
 tags
+.envrc
