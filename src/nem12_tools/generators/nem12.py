@@ -1,11 +1,15 @@
-# Version 1.0
 import csv
+import datetime
+import enum
+import io
 import json
 import os
 import random
-from datetime import datetime, timedelta, timezone
 
+import zoneinfo
 from loguru import logger
+
+from nem12_tools.parsers.nmid import MeterPoint
 
 from . import notifications as mdmt
 
@@ -15,6 +19,140 @@ map_number_of_intervals = {
     15: 96,
     30: 48,
 }
+
+
+@enum.unique
+class IntervalLength(enum.IntEnum):
+    FIVE_MINUTES = 5
+    FIFTEEN_MINUTES = 15
+    THIRTY_MINUTES = 30
+
+    def intervals(self) -> int:
+        return (24 * 60) // self.value
+
+
+@enum.unique
+class QualityMethod(enum.StrEnum):
+    ACTUAL = "A"
+    SUBSTITUTE = "S"
+    PERMANENT_SUBSTITUTE = "F"
+
+
+def generate_nem12(meter_point: MeterPoint) -> mdmt.meter_data_notification:
+    today = datetime.date.today()
+    transactions = io.StringIO(newline="")
+    writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
+
+    # Begin with a single day, expose as options later.
+    start = end = datetime.date.today()
+
+    # Header Row
+    writer.writerow(
+        (
+            "100",
+            "NEM12",
+            today.strftime("%Y%m%d%H%M"),
+            meter_point.role_mdp,
+            meter_point.role_rp,
+        )
+    )
+
+    current_date = start
+    while current_date <= end:
+        nmi_config = "".join(
+            reg.suffix for meter in meter_point.meters for reg in meter.registers
+        )
+        for meter in meter_point.meters:
+            for register in meter.registers:
+                # Write the register details
+                writer.writerow(
+                    (
+                        "200",
+                        meter_point.nmi,
+                        nmi_config,
+                        register.register_id,
+                        register.suffix,
+                        meter.serial_number,
+                        register.uom,
+                        str(IntervalLength.FIVE_MINUTES.value),
+                        "",  # Next scheduled read date
+                    )
+                )
+
+                # Write the consumption data
+                writer.writerow(
+                    (
+                        "300",
+                        current_date.strftime("%Y%m%d"),
+                        *_generate_consumption_profile(
+                            IntervalLength.FIVE_MINUTES.intervals()
+                        ),
+                        QualityMethod.ACTUAL.value,
+                        "",  # reason code - not required for ACTUAL
+                        "",  # reason description - not required for ACTUAL
+                        today.strftime("%Y%m%d%H%M%S"),
+                    )
+                )
+
+                # End of record
+                writer.writerow(("500",))
+        current_date += datetime.timedelta(days=1)
+    # End of file
+    writer.writerow(("900",))
+
+    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
+    meter_data_file = _create_meterdata_notification(meter_point)
+    meter_data_file.transactions(
+        transaction_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
+        transaction_date=str(now_tz),
+        transaction_type="MeterDataNotification",
+        transaction_schema_version="r25",
+        csv_interval_data=transactions.getvalue(),
+        participant_role="FRMP",
+    )
+    return meter_data_file
+
+
+def _generate_consumption_profile(
+    intervals: int, min_value: float = -0.3, max_value: float = 1.05
+) -> list[float]:
+    """
+    Generate reads over a 24 hour period over the given number of intervals.
+
+    By default, we bias the read values towards 0 with a negative lower bound that we then max to 0.
+    """
+    # Generate a consumption profile with a bell shaped curve, peaking at approximately 8pm
+    values = sorted(
+        # Bias the numbers towards the mode
+        round(random.triangular(min_value, max_value, mode=0.8), 4)
+        for _ in range(intervals)
+    )
+    # The pivot is selected to get to approximately 8pm
+    pivot = int(intervals // 1.2)
+    early, late = values[:pivot], values[pivot:]
+    # Low consumption in the morning, getting higher towards 8pm
+    early.sort()
+    # Peak at about 8pm, then decreasing towards midnight
+    late.sort(reverse=True)
+    return early + late
+
+
+def _create_meterdata_notification(
+    meter_point: MeterPoint,
+) -> mdmt.meter_data_notification:
+    today = datetime.date.today()
+    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
+    meter_data_file = mdmt.meter_data_notification()
+    meter_data_file.header(
+        from_text=meter_point.role_mdp,
+        to_text=meter_point.role_rp,
+        message_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
+        message_date=str(now_tz),
+        transaction_group="MDMT",
+        priority="Medium",
+        market="NEM",
+    )
+    return meter_data_file
 
 
 class read_meter_data_csv_config:
@@ -447,14 +585,3 @@ class generate_meter_data_file(validate_meter_data_file, read_meter_data_csv_con
                 participant_role="FRMP",
             )
             meter_data_file.write_xml(self.output_file)
-
-
-def generate_nem12(input_file_name: str, output_file_name: str) -> None:
-    with open(input_file_name, "r", newline="") as input_csv:
-        reader = csv.reader(input_csv, delimiter=",")
-        next(reader, None)  # skips header row if not required.
-        for meter_data_config in reader:
-            test = generate_meter_data_file(
-                output_file=output_file_name, meter_data_config_row=meter_data_config
-            )
-            test.generate_nem12_records()

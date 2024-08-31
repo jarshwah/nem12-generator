@@ -21,5 +21,5 @@ uv run pytest tests
 ## Usage
 
 ```sh
-uv run generate ...todo...
+uv run generate examples/nmi-discovery.xml out/nem12-transaction.xml
 ```
