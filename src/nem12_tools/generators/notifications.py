@@ -12,7 +12,7 @@ class meter_data_notification:
         self.tree = etree.ElementTree(self.root)
 
     def xml_root(self):
-        NS1 = "urn:aseXML:r29"
+        NS1 = "urn:aseXML:r43"
         NS2 = "http://www.w3.org/2001/XMLSchema-instance"
         ET.register_namespace("ase", NS1)
         ET.register_namespace("xsi", NS2)
@@ -21,7 +21,7 @@ class meter_data_notification:
         root = ET.Element(
             qname1,
             {
-                qname2: "urn:aseXML:r29 http://www.nemmco.com.au/aseXML/schemas/r29/aseXML_r29.xsd"
+                qname2: "urn:aseXML:r43 http://www.nemmco.com.au/aseXML/schemas/r43/aseXML_r43.xsd"
             },
         )
         return ET.tostring(root)
@@ -41,7 +41,7 @@ class meter_data_notification:
         <From>TXUN</From>
         <To>LOLOL</To>
         <MessageID>TXUN 3009a20200227120425987</MessageID>
-        <MessageDate>2020-02-27T12:00:2	6+10:00</MessageDate>
+        <MessageDate>2020-02-27T12:00:26+10:00</MessageDate>
         <TransactionGroup>SORD</TransactionGroup>
         <Priority>Low</Priority>
         <Market>VICGAS</Market>
