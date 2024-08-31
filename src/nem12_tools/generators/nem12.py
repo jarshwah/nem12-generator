@@ -84,9 +84,6 @@ def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
                         today.strftime("%Y%m%d%H%M%S"),
                     )
                 )
-
-                # End of record
-                writer.writerow(("500",))
         current_date += datetime.timedelta(days=1)
     # End of file
     writer.writerow(("900",))
