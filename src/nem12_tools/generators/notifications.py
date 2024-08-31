@@ -4,6 +4,10 @@ from lxml import etree
 
 
 class MeterDataNotification:
+    parser: etree.XMLParser
+    root: etree.Element
+    tree: etree.ElementTree
+
     def __init__(self):
         self.parser = etree.XMLParser(
             remove_blank_text=True
