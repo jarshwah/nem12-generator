@@ -28,8 +28,8 @@ class MeterPoint:
     """
 
     nmi: str
-    from_participant: str
-    to_participant: str
+    role_mdp: str
+    role_rp: str
 
     meters: list[Meter]
 
@@ -43,8 +43,8 @@ def from_nmidiscovery(xml_doc: str) -> MeterPoint:
 
     return MeterPoint(
         nmi=root.findtext(".//NMI"),
-        from_participant=_get_from_participant(root),
-        to_participant=_get_to_participant(root),
+        role_mdp=_get_participant(root, "MDP"),
+        role_rp=_get_participant(root, "RP"),
         meters=_get_meters(root),
     )
 
@@ -75,25 +75,11 @@ def _get_meters(root: etree.Element) -> list[Meter]:
     return meters
 
 
-def _get_from_participant(root: etree.Element) -> str:
+def _get_participant(root: etree.Element, role: str) -> str:
     """
-    Get the 'From' participant from the XML root element.
+    Get the participant from the XML root element.
     """
-    from_participant = ""
     for participants in root.findall(".//RoleAssignment"):
-        if participants.findtext(".//Role") == "MDP":
-            from_participant = participants.findtext(".//Party")
-            break
-    return from_participant
-
-
-def _get_to_participant(root: etree.Element) -> str:
-    """
-    Get the 'To' participant from the XML root element.
-    """
-    to_participant = ""
-    for participants in root.findall(".//RoleAssignment"):
-        if participants.findtext(".//Role") == "RP":
-            to_participant = participants.findtext(".//Party")
-            break
-    return to_participant
+        if participants.findtext(".//Role") == role:
+            return participants.findtext(".//Party")
+    raise ValueError(f"Participant with role {role} not found.")
