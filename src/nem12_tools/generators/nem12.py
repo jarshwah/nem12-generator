@@ -28,7 +28,7 @@ class QualityMethod(enum.StrEnum):
     PERMANENT_SUBSTITUTE = "F"
 
 
-def generate_nem12(meter_point: MeterPoint) -> mdmt.meter_data_notification:
+def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
     today = datetime.date.today()
     transactions = io.StringIO(newline="")
     writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
@@ -129,10 +129,10 @@ def _generate_consumption_profile(
 
 def _create_meterdata_notification(
     meter_point: MeterPoint,
-) -> mdmt.meter_data_notification:
+) -> mdmt.MeterDataNotification:
     today = datetime.date.today()
     now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
-    meter_data_file = mdmt.meter_data_notification()
+    meter_data_file = mdmt.MeterDataNotification()
     meter_data_file.header(
         from_text=meter_point.role_mdp,
         to_text=meter_point.role_rp,

@@ -3,7 +3,7 @@ from xml.etree import ElementTree as ET
 from lxml import etree
 
 
-class meter_data_notification:
+class MeterDataNotification:
     def __init__(self):
         self.parser = etree.XMLParser(
             remove_blank_text=True
