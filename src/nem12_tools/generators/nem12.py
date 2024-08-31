@@ -3,6 +3,7 @@ import datetime
 import enum
 import io
 import random
+from decimal import Decimal
 
 import zoneinfo
 
@@ -105,7 +106,7 @@ def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
 
 def _generate_consumption_profile(
     intervals: int, min_value: float = -0.3, max_value: float = 1.05
-) -> list[float]:
+) -> list[Decimal]:
     """
     Generate reads over a 24 hour period over the given number of intervals.
 
@@ -114,7 +115,7 @@ def _generate_consumption_profile(
     # Generate a consumption profile with a bell shaped curve, peaking at approximately 8pm
     values = sorted(
         # Bias the numbers towards the mode
-        round(random.triangular(min_value, max_value, mode=0.8), 4)
+        round(max(0, random.triangular(min_value, max_value, mode=0.8)), 4)
         for _ in range(intervals)
     )
     # The pivot is selected to get to approximately 8pm
@@ -124,7 +125,8 @@ def _generate_consumption_profile(
     early.sort()
     # Peak at about 8pm, then decreasing towards midnight
     late.sort(reverse=True)
-    return early + late
+    padding = Decimal("0.0000")
+    return [Decimal(f"{read}").quantize(padding) for read in early + late]
 
 
 def _create_meterdata_notification(
