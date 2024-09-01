@@ -65,7 +65,7 @@ class MeterDataNotification:
         self.header_msg_date = etree.SubElement(self.header_parent, "MessageDate")
         self.header_msg_date.text = message_date
 
-        self.header_trans_grp = etree.SubElement(self.header_parent, "TransactonGroup")
+        self.header_trans_grp = etree.SubElement(self.header_parent, "TransactionGroup")
         self.header_trans_grp.text = transaction_group
 
         self.header_priority = etree.SubElement(self.header_parent, "Priority")

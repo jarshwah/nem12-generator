@@ -8,8 +8,8 @@ def test_nmidiscovery_parsed():
     xml = open(f"{here}/../examples/nmi-discovery.xml").read()
     parsed = nmid.from_nmidiscovery(xml)
     assert parsed.nmi == "4102335210"
-    assert parsed.from_participant == "ACTIVMDP"
-    assert parsed.to_participant == "ORIGINMC"
+    assert parsed.role_mdp == "ACTIVMDP"
+    assert parsed.role_rp == "ORIGINMC"
     assert len(parsed.meters) == 1
     meter = parsed.meters[0]
     assert meter.serial_number == "701226207"
