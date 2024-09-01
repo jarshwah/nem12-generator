@@ -29,13 +29,14 @@ class QualityMethod(enum.StrEnum):
     PERMANENT_SUBSTITUTE = "F"
 
 
-def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
+def generate_nem12(
+    meter_point: MeterPoint,
+    start: datetime.date = datetime.date.today(),
+    end: datetime.date = datetime.date.today(),
+) -> mdmt.MeterDataNotification:
     today = datetime.date.today()
     transactions = io.StringIO(newline="")
     writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
-
-    # Begin with a single day, expose as options later.
-    start = end = datetime.date.today()
 
     # Header Row
     writer.writerow(
