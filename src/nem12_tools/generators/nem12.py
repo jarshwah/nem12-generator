@@ -63,6 +63,7 @@ def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
                         nmi_config,
                         register.register_id,
                         register.suffix,
+                        "",  # MDMData Stream Identifier
                         meter.serial_number,
                         register.uom,
                         str(IntervalLength.FIVE_MINUTES.value),
@@ -81,6 +82,7 @@ def generate_nem12(meter_point: MeterPoint) -> mdmt.MeterDataNotification:
                         QualityMethod.ACTUAL.value,
                         "",  # reason code - not required for ACTUAL
                         "",  # reason description - not required for ACTUAL
+                        today.strftime("%Y%m%d%H%M%S"),
                         today.strftime("%Y%m%d%H%M%S"),
                     )
                 )
