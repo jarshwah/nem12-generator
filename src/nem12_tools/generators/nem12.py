@@ -45,7 +45,7 @@ def generate_nem12(
             "NEM12",
             today.strftime("%Y%m%d%H%M"),
             meter_point.role_mdp,
-            meter_point.role_rp,
+            meter_point.role_frmp,
         )
     )
 
@@ -95,7 +95,7 @@ def generate_nem12(
     meter_data_file = _create_meterdata_notification(meter_point)
     meter_data_file.transactions(
         transaction_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
-        transaction_date=str(now_tz),
+        transaction_date=now_tz.isoformat(timespec="seconds"),
         transaction_type="MeterDataNotification",
         transaction_schema_version="r25",
         csv_interval_data=transactions.getvalue(),
@@ -137,7 +137,7 @@ def _create_meterdata_notification(
     meter_data_file = mdmt.MeterDataNotification()
     meter_data_file.header(
         from_text=meter_point.role_mdp,
-        to_text=meter_point.role_rp,
+        to_text=meter_point.role_frmp,
         message_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
         message_date=str(now_tz),
         transaction_group="MDMT",

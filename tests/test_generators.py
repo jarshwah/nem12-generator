@@ -12,7 +12,7 @@ def test_nem12():
     m = MeterPoint(
         nmi="4102335210",
         role_mdp="ACTIVMDP",
-        role_rp="ORIGINMC",
+        role_frmp="ENERGEX",
         meters=[
             Meter(
                 serial_number="701226207",
@@ -28,7 +28,7 @@ def test_nem12():
 
     root = lxml.etree.fromstring(xml_file.getvalue())
     assert root.findtext("./Header/From") == "ACTIVMDP"
-    assert root.findtext("./Header/To") == "ORIGINMC"
+    assert root.findtext("./Header/To") == "ENERGEX"
     assert root.findtext("./Header/TransactionGroup") == "MDMT"
     assert root.findtext("./Header/Priority") == "Medium"
     assert root.findtext("./Header/Market") == "NEM"
@@ -37,7 +37,7 @@ def test_nem12():
     assert csv_data is not None
     reader = csv.reader(csv_data.splitlines())
     section_100 = next(reader)
-    assert section_100 == ["100", "NEM12", mock.ANY, "ACTIVMDP", "ORIGINMC"]
+    assert section_100 == ["100", "NEM12", mock.ANY, "ACTIVMDP", "ENERGEX"]
     section_200 = next(reader)
     assert section_200 == [
         "200",

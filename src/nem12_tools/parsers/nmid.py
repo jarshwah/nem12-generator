@@ -29,7 +29,7 @@ class MeterPoint:
 
     nmi: str
     role_mdp: str
-    role_rp: str
+    role_frmp: str
 
     meters: list[Meter]
 
@@ -44,7 +44,7 @@ def from_nmidiscovery(xml_doc: str) -> MeterPoint:
     return MeterPoint(
         nmi=root.findtext(".//NMI"),
         role_mdp=_get_participant(root, "MDP"),
-        role_rp=_get_participant(root, "RP"),
+        role_frmp=_get_frmp(root),
         meters=_get_meters(root),
     )
 
@@ -83,3 +83,12 @@ def _get_participant(root: etree.Element, role: str) -> str:
         if participants.findtext(".//Role") == role:
             return participants.findtext(".//Party")
     raise ValueError(f"Participant with role {role} not found.")
+
+
+def _get_frmp(root: etree.Element) -> str:
+    """
+    Get the FRMP role from the XML root element.
+
+    We extract the To participant from the header.
+    """
+    return root.findtext("./Header/To")
