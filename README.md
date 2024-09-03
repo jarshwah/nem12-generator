@@ -2,6 +2,9 @@
 
 This project takes a meter configuration and generates NEM12 files.
 
+![Tests](https://github.com/jarshwah/nem12-generator/actions/workflows/test.yml/badge.svg)
+![Lint](https://github.com/jarshwah/nem12-generator/actions/workflows/pre-commit.yml/badge.svg)
+
 
 ## Setup / Development
 

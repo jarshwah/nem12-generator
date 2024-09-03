@@ -19,6 +19,5 @@ jobs:
         cache: 'pip'
     - name: Install uv
       run: pip install uv
-    - run: uv sync
     - name: Run tests
       run: uv run pytest tests -vv
