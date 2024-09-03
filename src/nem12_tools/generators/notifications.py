@@ -5,8 +5,8 @@ from lxml import etree
 
 class MeterDataNotification:
     parser: etree.XMLParser
-    root: etree.Element
-    tree: etree.ElementTree
+    root: etree._Element
+    tree: etree._ElementTree
 
     def __init__(self):
         self.parser = etree.XMLParser(
@@ -23,9 +23,9 @@ class MeterDataNotification:
         qname1 = ET.QName(NS1, "aseXML")  # Element QName
         qname2 = ET.QName(NS2, "schemaLocation")  # Attribute QName
         root = ET.Element(
-            qname1,
+            qname1.text,
             {
-                qname2: "urn:aseXML:r43 http://www.nemmco.com.au/aseXML/schemas/r43/aseXML_r43.xsd"
+                qname2.text: "urn:aseXML:r43 http://www.nemmco.com.au/aseXML/schemas/r43/aseXML_r43.xsd"
             },
         )
         return ET.tostring(root)

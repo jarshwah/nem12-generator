@@ -42,30 +42,43 @@ def from_nmidiscovery(xml_doc: str) -> MeterPoint:
     root = etree.fromstring(xml_doc)
 
     return MeterPoint(
-        nmi=root.findtext(".//NMI"),
+        nmi=_get_nmi(root),
         role_mdp=_get_participant(root, "MDP"),
         role_frmp=_get_frmp(root),
         meters=_get_meters(root),
     )
 
 
-def _get_meters(root: etree.Element) -> list[Meter]:
+def _get_nmi(root) -> str:
+    nmi = root.findtext(".//NMI")
+    if not nmi:
+        raise ValueError("NMI not found in NMI Discovery XML.")
+    return nmi
+
+
+def _get_meters(root: etree._Element) -> list[Meter]:
     """
     Get the list of meters from the XML root element.
     """
     meters = []
     for meter in root.findall(".//Meter"):
-        status = meter.find(".//Status").text
+        status = meter.findtext(".//Status")
         if status == "C":
-            serial_number = meter.find(".//SerialNumber").text
+            serial_number = meter.findtext(".//SerialNumber")
+            if not serial_number:
+                raise ValueError("Serial number not found in NMI Discovery XML.")
 
             registers = []
             for register in meter.findall(".//Register"):
-                register_status = register.find(".//Status").text
+                register_status = register.findtext(".//Status")
                 if register_status == "C":
-                    register_id = register.find(".//RegisterID").text
-                    uom = register.find(".//UnitOfMeasure").text
-                    suffix = register.find(".//Suffix").text
+                    register_id = register.findtext(".//RegisterID")
+                    uom = register.findtext(".//UnitOfMeasure")
+                    suffix = register.findtext(".//Suffix")
+                    if not register_id or not uom or not suffix:
+                        raise ValueError(
+                            "Register details not found in NMI Discovery XML."
+                        )
 
                     registers.append(Register(register_id, uom, suffix))
 
@@ -75,20 +88,25 @@ def _get_meters(root: etree.Element) -> list[Meter]:
     return meters
 
 
-def _get_participant(root: etree.Element, role: str) -> str:
+def _get_participant(root: etree._Element, role: str) -> str:
     """
     Get the participant from the XML root element.
     """
     for participants in root.findall(".//RoleAssignment"):
         if participants.findtext(".//Role") == role:
-            return participants.findtext(".//Party")
+            if party := participants.findtext(".//Party"):
+                return party
+
     raise ValueError(f"Participant with role {role} not found.")
 
 
-def _get_frmp(root: etree.Element) -> str:
+def _get_frmp(root: etree._Element) -> str:
     """
     Get the FRMP role from the XML root element.
 
     We extract the To participant from the header.
     """
-    return root.findtext("./Header/To")
+    frmp = root.findtext("./Header/To")
+    if not frmp:
+        raise ValueError("FRMP not found in NMI Discovery XML.")
+    return frmp

@@ -3,7 +3,7 @@ import datetime
 from io import BytesIO
 from unittest import mock
 
-import lxml
+from lxml import etree
 
 from nem12_tools.generators import nem12
 from nem12_tools.parsers.nmid import Meter, MeterPoint, Register
@@ -27,7 +27,7 @@ def test_nem12():
         xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
     )
 
-    root = lxml.etree.fromstring(xml_file.getvalue())
+    root = etree.fromstring(xml_file.getvalue())
     assert root.findtext("./Header/From") == "ACTIVMDP"
     assert root.findtext("./Header/To") == "ENERGEX"
     assert root.findtext("./Header/TransactionGroup") == "MTRD"
@@ -80,8 +80,9 @@ def test_multiple_dates():
         xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
     )
 
-    root = lxml.etree.fromstring(xml_file.getvalue())
+    root = etree.fromstring(xml_file.getvalue())
     csv_data = root.findtext(".//CSVIntervalData")
+    assert csv_data is not None
     reader = csv.reader(csv_data.splitlines())
     assert next(reader)[0] == "100"
     assert next(reader)[0] == "200"
