@@ -24,6 +24,8 @@ dev-dependencies = [
     "ipython>=8.27.0",
     "ipdb>=0.13.13",
     "pytest>=8.3.2",
+    "pre-commit>=3.8.0",
+    "lxml-stubs>=0.5.1",
 ]
 
 [tool.pyright]
@@ -33,3 +35,5 @@ exclude = [
 ]
 reportMissingImports = "error"
 pythonVersion = "3.11"
+venv = ".venv"
+venvPath = "."
