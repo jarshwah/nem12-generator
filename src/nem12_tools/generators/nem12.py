@@ -140,7 +140,7 @@ def _create_meterdata_notification(
         from_text=meter_point.role_mdp,
         to_text=meter_point.role_frmp,
         message_id=f"MTRD_MSG_NEM12_{now_tz.strftime('%Y%m%d%H%M%f')}",
-        message_date=str(now_tz),
+        message_date=now_tz.isoformat(timespec="seconds"),
         transaction_group="MTRD",
         priority="Medium",
         market="NEM",
