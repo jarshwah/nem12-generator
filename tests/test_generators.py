@@ -30,7 +30,7 @@ def test_nem12():
     root = lxml.etree.fromstring(xml_file.getvalue())
     assert root.findtext("./Header/From") == "ACTIVMDP"
     assert root.findtext("./Header/To") == "ENERGEX"
-    assert root.findtext("./Header/TransactionGroup") == "MDMT"
+    assert root.findtext("./Header/TransactionGroup") == "MTRD"
     assert root.findtext("./Header/Priority") == "Medium"
     assert root.findtext("./Header/Market") == "NEM"
 
