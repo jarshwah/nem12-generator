@@ -34,7 +34,7 @@ def generate_nem12(
     start: datetime.date = datetime.date.today(),
     end: datetime.date = datetime.date.today(),
 ) -> mdmt.MeterDataNotification:
-    today = datetime.date.today()
+    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
     transactions = io.StringIO(newline="")
     writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
 
@@ -43,7 +43,7 @@ def generate_nem12(
         (
             "100",
             "NEM12",
-            today.strftime("%Y%m%d%H%M"),
+            now_tz.strftime("%Y%m%d%H%M"),
             meter_point.role_mdp,
             meter_point.role_frmp,
         )
@@ -86,18 +86,17 @@ def generate_nem12(
                         QualityMethod.ACTUAL.value,
                         "",  # reason code - not required for ACTUAL
                         "",  # reason description - not required for ACTUAL
-                        today.strftime("%Y%m%d%H%M%S"),
-                        today.strftime("%Y%m%d%H%M%S"),
+                        now_tz.strftime("%Y%m%d%H%M%S"),
+                        now_tz.strftime("%Y%m%d%H%M%S"),
                     )
                 )
                 current_date += datetime.timedelta(days=1)
     # End of file
     writer.writerow(("900",))
 
-    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
     meter_data_file = _create_meterdata_notification(meter_point)
     meter_data_file.transactions(
-        transaction_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
+        transaction_id=f"MTRD_MSG_NEM12_{now_tz.strftime('%Y%m%d%H%M%f')}",
         transaction_date=now_tz.isoformat(timespec="seconds"),
         transaction_type="MeterDataNotification",
         transaction_schema_version="r25",
@@ -135,13 +134,12 @@ def _generate_consumption_profile(
 def _create_meterdata_notification(
     meter_point: MeterPoint,
 ) -> mdmt.MeterDataNotification:
-    today = datetime.date.today()
     now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
     meter_data_file = mdmt.MeterDataNotification()
     meter_data_file.header(
         from_text=meter_point.role_mdp,
         to_text=meter_point.role_frmp,
-        message_id=f"MTRD_MSG_NEM12_{today.strftime('%Y%m%d%H%M%f')}",
+        message_id=f"MTRD_MSG_NEM12_{now_tz.strftime('%Y%m%d%H%M%f')}",
         message_date=str(now_tz),
         transaction_group="MDMT",
         priority="Medium",
