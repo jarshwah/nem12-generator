@@ -1,4 +1,5 @@
 import csv
+import datetime
 from io import BytesIO
 from unittest import mock
 
@@ -57,3 +58,34 @@ def test_nem12():
     assert section_300[-5:] == ["A", "", "", mock.ANY, mock.ANY]
     section_900 = next(reader)
     assert section_900 == ["900"]
+
+
+def test_multiple_dates():
+    m = MeterPoint(
+        nmi="4102335210",
+        role_mdp="ACTIVMDP",
+        role_frmp="ENERGEX",
+        meters=[
+            Meter(
+                serial_number="701226207",
+                registers=[Register(register_id="E1", uom="KWH", suffix="E1")],
+            )
+        ],
+    )
+    notification = nem12.generate_nem12(
+        m, start=datetime.date(2024, 1, 1), end=datetime.date(2024, 1, 2)
+    )
+    xml_file = BytesIO()
+    notification.tree.write(
+        xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
+    )
+
+    root = lxml.etree.fromstring(xml_file.getvalue())
+    csv_data = root.findtext(".//CSVIntervalData")
+    reader = csv.reader(csv_data.splitlines())
+    assert next(reader)[0] == "100"
+    assert next(reader)[0] == "200"
+    # each read date is nested under the 200 section rather than alternating
+    assert next(reader)[0] == "300"
+    assert next(reader)[0] == "300"
+    assert next(reader)[0] == "900"

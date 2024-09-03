@@ -49,29 +49,32 @@ def generate_nem12(
         )
     )
 
-    current_date = start
-    while current_date <= end:
-        nmi_config = "".join(
-            reg.suffix for meter in meter_point.meters for reg in meter.registers
-        )
-        for meter in meter_point.meters:
-            for register in meter.registers:
-                # Write the register details
-                writer.writerow(
-                    (
-                        "200",
-                        meter_point.nmi,
-                        nmi_config,
-                        register.register_id,
-                        register.suffix,
-                        "",  # MDMData Stream Identifier
-                        meter.serial_number,
-                        register.uom,
-                        str(IntervalLength.FIVE_MINUTES.value),
-                        "",  # Next scheduled read date
-                    )
-                )
+    if start > end:
+        raise ValueError("Start date must be before end date")
 
+    nmi_config = "".join(
+        reg.suffix for meter in meter_point.meters for reg in meter.registers
+    )
+    for meter in meter_point.meters:
+        for register in meter.registers:
+            # Write the register details
+            writer.writerow(
+                (
+                    "200",
+                    meter_point.nmi,
+                    nmi_config,
+                    register.register_id,
+                    register.suffix,
+                    "",  # MDMData Stream Identifier
+                    meter.serial_number,
+                    register.uom,
+                    str(IntervalLength.FIVE_MINUTES.value),
+                    "",  # Next scheduled read date
+                )
+            )
+
+            current_date = start
+            while current_date <= end:
                 # Write the consumption data
                 writer.writerow(
                     (
@@ -87,7 +90,7 @@ def generate_nem12(
                         today.strftime("%Y%m%d%H%M%S"),
                     )
                 )
-        current_date += datetime.timedelta(days=1)
+                current_date += datetime.timedelta(days=1)
     # End of file
     writer.writerow(("900",))
 
