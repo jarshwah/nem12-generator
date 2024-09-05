@@ -107,7 +107,7 @@ def generate_nem12(
 
 
 def _generate_consumption_profile(
-    intervals: int, min_value: float = -0.3, max_value: float = 1.05
+    intervals: int, min_value: float = -0.6, max_value: float = 0.8
 ) -> list[Decimal]:
     """
     Generate reads over a 24 hour period over the given number of intervals.
@@ -117,7 +117,7 @@ def _generate_consumption_profile(
     # Generate a consumption profile with a bell shaped curve, peaking at approximately 8pm
     values = sorted(
         # Bias the numbers towards the mode
-        round(max(0, random.triangular(min_value, max_value, mode=0.8)), 4)
+        round(max(0, random.triangular(min_value, max_value, mode=0.6)), 4)
         for _ in range(intervals)
     )
     # The pivot is selected to get to approximately 8pm
