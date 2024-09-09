@@ -121,3 +121,28 @@ class TestHeader:
         now_formatted = now.strftime("%Y%m%d%H%M")
         header = nem12.Header(generation_time=now, from_participant="A", to_participant="B")
         assert header.as_row() == ("100", "NEM12", now_formatted, "A", "B")
+
+
+class TestNmiDetails:
+    def test_emits_row(self):
+        nmi_details = nem12.NmiDetails(
+            nmi="4102335210",
+            nmi_configuration="E1",
+            register_id="E1",
+            register_suffix="E1",
+            meter_serial_number="701226207",
+            uom="KWH",
+            interval_length=nem12.IntervalLength.FIVE_MINUTES,
+        )
+        assert nmi_details.as_row() == (
+            "200",
+            "4102335210",
+            "E1",
+            "E1",
+            "E1",
+            "",
+            "701226207",
+            "KWH",
+            "5",
+            "",
+        )

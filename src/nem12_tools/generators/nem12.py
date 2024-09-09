@@ -3,10 +3,10 @@ import datetime
 import enum
 import io
 import random
+import zoneinfo
 from abc import ABC, abstractmethod
 from decimal import Decimal
 
-import zoneinfo
 from pydantic import BaseModel, Field, field_serializer
 
 from nem12_tools.parsers.nmid import MeterPoint
@@ -58,6 +58,42 @@ class Header(RowProducer, BaseModel):
         )
 
 
+class NmiDetails(RowProducer, BaseModel):
+    indicator: str = "200"
+    nmi: str
+    nmi_configuration: str
+    register_id: str
+    register_suffix: str
+    mdm_data_stream: str = ""
+    meter_serial_number: str
+    uom: str
+    interval_length: IntervalLength
+    next_scheduled_read_date: None = None
+
+    @field_serializer("next_scheduled_read_date")
+    def serialize_next_scheduled_read_date(self, next_scheduled_read_date: None) -> str:
+        return ""
+
+    @field_serializer("interval_length")
+    def serialize_interval_length(self, interval_length: IntervalLength) -> str:
+        return str(interval_length.value)
+
+    def as_row(self) -> tuple[str, ...]:
+        data = self.model_dump()
+        return (
+            data["indicator"],
+            data["nmi"],
+            data["nmi_configuration"],
+            data["register_id"],
+            data["register_suffix"],
+            data["mdm_data_stream"],
+            data["meter_serial_number"],
+            data["uom"],
+            data["interval_length"],
+            data["next_scheduled_read_date"],
+        )
+
+
 def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
@@ -81,21 +117,17 @@ def generate_nem12(
     nmi_config = "".join(reg.suffix for meter in meter_point.meters for reg in meter.registers)
     for meter in meter_point.meters:
         for register in meter.registers:
-            # Write the register details
-            writer.writerow(
-                (
-                    "200",
-                    meter_point.nmi,
-                    nmi_config,
-                    register.register_id,
-                    register.suffix,
-                    "",  # MDMData Stream Identifier
-                    meter.serial_number,
-                    register.uom,
-                    str(interval.value),
-                    "",  # Next scheduled read date
-                )
+            nmi_details = NmiDetails(
+                nmi=meter_point.nmi,
+                nmi_configuration=nmi_config,
+                register_id=register.register_id,
+                register_suffix=register.suffix,
+                meter_serial_number=meter.serial_number,
+                uom=register.uom,
+                interval_length=interval,
             )
+            # Write the register details
+            writer.writerow(nmi_details.as_row())
 
             current_date = start
             while current_date <= end:
