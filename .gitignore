@@ -20,6 +20,7 @@ eggs
 develop-eggs
 .mypy_cache
 .ruff_cache
+.pytest_cache
 
 # Testing and local development
 .python-version
