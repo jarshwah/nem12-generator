@@ -48,9 +48,9 @@ def generate(
     meter_config = from_nmidiscovery(nmi_discovery_file.read())
     if frmp:
         meter_config.role_frmp = frmp
-    interval = nem12.IntervalLength(int(interval))
+    interval_length = nem12.IntervalLength(int(interval))
     meter_data_transaction = nem12.generate_nem12(
-        meter_config, from_date.date(), to_date.date()
+        meter_config, from_date.date(), to_date.date(), interval_length
     )
     meter_data_transaction.tree.write(
         output_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
