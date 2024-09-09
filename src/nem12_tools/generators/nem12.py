@@ -138,6 +138,13 @@ class IntervalData(RowProducer, BaseModel):
         )
 
 
+class Terminator(RowProducer, BaseModel):
+    indicator: str = "900"
+
+    def as_row(self) -> tuple[str, ...]:
+        return (self.indicator,)
+
+
 def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
@@ -186,7 +193,8 @@ def generate_nem12(
                 writer.writerow(interval_data.as_row())
                 current_date += datetime.timedelta(days=1)
     # End of file
-    writer.writerow(("900",))
+    terminator = Terminator()
+    writer.writerow(terminator.as_row())
 
     meter_data_file = _create_meterdata_notification(meter_point)
     meter_data_file.transactions(

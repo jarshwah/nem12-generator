@@ -171,3 +171,9 @@ class TestIntervalData:
             now_formatted,
             now_formatted,
         )
+
+
+class TestTerminator:
+    def test_emits_row(self):
+        terminator = nem12.Terminator()
+        assert terminator.as_row() == ("900",)
