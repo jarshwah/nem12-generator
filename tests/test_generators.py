@@ -90,3 +90,31 @@ def test_multiple_dates():
     assert next(reader)[0] == "300"
     assert next(reader)[0] == "300"
     assert next(reader)[0] == "900"
+
+def test_interval_15():
+    m = MeterPoint(
+        nmi="4102335210",
+        role_mdp="ACTIVMDP",
+        role_frmp="ENERGEX",
+        meters=[
+            Meter(
+                serial_number="701226207",
+                registers=[Register(register_id="E1", uom="KWH", suffix="E1")],
+            )
+        ],
+    )
+    notification = nem12.generate_nem12(m, interval=nem12.IntervalLength.FIFTEEN_MINUTES)
+    xml_file = BytesIO()
+    notification.tree.write(
+        xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
+    )
+
+    root = etree.fromstring(xml_file.getvalue())
+    csv_data = root.findtext(".//CSVIntervalData")
+    assert csv_data is not None
+    reader = csv.reader(csv_data.splitlines())
+    assert next(reader)[0] == "100"
+    assert next(reader)[0] == "200"
+    row_300 = next(reader)
+    assert row_300[0] == "300"
+    assert len(row_300) == 103

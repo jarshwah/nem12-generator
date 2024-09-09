@@ -33,6 +33,7 @@ def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
     end: datetime.date = datetime.date.today(),
+    interval: IntervalLength = IntervalLength.FIVE_MINUTES,
 ) -> mdmt.MeterDataNotification:
     now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
     transactions = io.StringIO(newline="")
@@ -68,7 +69,7 @@ def generate_nem12(
                     "",  # MDMData Stream Identifier
                     meter.serial_number,
                     register.uom,
-                    str(IntervalLength.FIVE_MINUTES.value),
+                    str(interval.value),
                     "",  # Next scheduled read date
                 )
             )
@@ -80,9 +81,7 @@ def generate_nem12(
                     (
                         "300",
                         current_date.strftime("%Y%m%d"),
-                        *_generate_consumption_profile(
-                            IntervalLength.FIVE_MINUTES.intervals()
-                        ),
+                        *_generate_consumption_profile(interval.intervals()),
                         QualityMethod.ACTUAL.value,
                         "",  # reason code - not required for ACTUAL
                         "",  # reason description - not required for ACTUAL

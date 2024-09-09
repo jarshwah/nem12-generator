@@ -21,6 +21,8 @@ def test_generate(tmp_path: pathlib.Path):
             "2021-01-02",
             "--frmp",
             "TEST",
+            "--interval",
+            "5",
         ],
     )
 
