@@ -94,6 +94,50 @@ class NmiDetails(RowProducer, BaseModel):
         )
 
 
+class IntervalData(RowProducer, BaseModel):
+    indicator: str = "300"
+    read_date: datetime.date
+    read_values: tuple[Decimal, ...]
+    quality_method: QualityMethod
+    reason_code: str = ""
+    reason_description: str = ""
+    last_updated: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    msats_load_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    @field_serializer("read_date")
+    def serialize_read_date(self, read_date: datetime.date) -> str:
+        return read_date.strftime("%Y%m%d")
+
+    @field_serializer("read_values")
+    def serialize_read_values(self, read_values: list[Decimal]) -> tuple[str, ...]:
+        return tuple(str(read) for read in read_values)
+
+    @field_serializer("quality_method")
+    def serialize_quality_method(self, quality_method: QualityMethod) -> str:
+        return quality_method.value
+
+    @field_serializer("last_updated")
+    def serialize_last_updated(self, last_updated: datetime.datetime) -> str:
+        return last_updated.strftime("%Y%m%d%H%M%S")
+
+    @field_serializer("msats_load_time")
+    def serialize_msats_load_time(self, msats_load_time: datetime.datetime) -> str:
+        return msats_load_time.strftime("%Y%m%d%H%M%S")
+
+    def as_row(self) -> tuple[str, ...]:
+        data = self.model_dump()
+        return (
+            data["indicator"],
+            data["read_date"],
+            *data["read_values"],
+            data["quality_method"],
+            data["reason_code"],
+            data["reason_description"],
+            data["last_updated"],
+            data["msats_load_time"],
+        )
+
+
 def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
@@ -132,18 +176,14 @@ def generate_nem12(
             current_date = start
             while current_date <= end:
                 # Write the consumption data
-                writer.writerow(
-                    (
-                        "300",
-                        current_date.strftime("%Y%m%d"),
-                        *_generate_consumption_profile(interval.intervals()),
-                        QualityMethod.ACTUAL.value,
-                        "",  # reason code - not required for ACTUAL
-                        "",  # reason description - not required for ACTUAL
-                        now_tz.strftime("%Y%m%d%H%M%S"),
-                        now_tz.strftime("%Y%m%d%H%M%S"),
-                    )
+                interval_data = IntervalData(
+                    read_date=current_date,
+                    read_values=_generate_consumption_profile(interval.intervals()),
+                    quality_method=QualityMethod.ACTUAL,
+                    last_updated=now_tz,
+                    msats_load_time=now_tz,
                 )
+                writer.writerow(interval_data.as_row())
                 current_date += datetime.timedelta(days=1)
     # End of file
     writer.writerow(("900",))
@@ -162,7 +202,7 @@ def generate_nem12(
 
 def _generate_consumption_profile(
     intervals: int, min_value: float = -0.6, max_value: float = 0.8
-) -> list[Decimal]:
+) -> tuple[Decimal, ...]:
     """
     Generate reads over a 24 hour period over the given number of intervals.
 
@@ -182,7 +222,7 @@ def _generate_consumption_profile(
     # Peak at about 8pm, then decreasing towards midnight
     late.sort(reverse=True)
     padding = Decimal("0.0000")
-    return [Decimal(f"{read}").quantize(padding) for read in early + late]
+    return tuple(Decimal(f"{read}").quantize(padding) for read in early + late)
 
 
 def _create_meterdata_notification(

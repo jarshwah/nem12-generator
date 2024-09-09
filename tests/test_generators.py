@@ -1,5 +1,6 @@
 import csv
 import datetime
+from decimal import Decimal
 from io import BytesIO
 from unittest import mock
 
@@ -145,4 +146,28 @@ class TestNmiDetails:
             "KWH",
             "5",
             "",
+        )
+
+
+class TestIntervalData:
+    def test_emits_row(self):
+        now = datetime.datetime(2024, 9, 3, 12, 34, 56)
+        now_formatted = "20240903123456"
+        interval_data = nem12.IntervalData(
+            read_date=now.date(),
+            read_values=(Decimal("1.0000"), Decimal("0.0500")),
+            quality_method=nem12.QualityMethod.ACTUAL,
+            last_updated=now,
+            msats_load_time=now,
+        )
+        assert interval_data.as_row() == (
+            "300",
+            "20240903",
+            "1.0000",
+            "0.0500",
+            "A",
+            "",
+            "",
+            now_formatted,
+            now_formatted,
         )
