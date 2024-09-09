@@ -1,6 +1,6 @@
 [project]
 name = "nem12_tools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate NEM12 files for testing"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -9,6 +9,26 @@ dependencies = [
     "click>=8.1.2",
     "pydantic>=2.5.0",
 ]
+license = {file = "LICENSE"}
+authors = [
+    { name = "Josh Smeaton", email = "josh.smeaton@gmail.com" },
+]
+maintainers = [
+    { name = "Josh Smeaton", email = "josh.smeaton@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+
+[project.urls]
+repository = "https://github.com/jarshwah/nem12-generator"
+documentation = "https://github.com/jarshwah/nem12-generator"
+issues = "https://github.com/jarshwah/nem12-generator/issues"
 
 [project.scripts]
 generate = "nem12_tools.cli:generate"
@@ -16,6 +36,16 @@ generate = "nem12_tools.cli:generate"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/.vscode",
+  "/uv.lock",
+  "/*.code-workspace",
+  "/.pre-commit-config.yaml",
+  "/.gitignore",
+]
 
 [tool.uv]
 dev-dependencies = [
