@@ -76,9 +76,7 @@ def _get_meters(root: etree._Element) -> list[Meter]:
                     uom = register.findtext(".//UnitOfMeasure")
                     suffix = register.findtext(".//Suffix")
                     if not register_id or not uom or not suffix:
-                        raise ValueError(
-                            "Register details not found in NMI Discovery XML."
-                        )
+                        raise ValueError("Register details not found in NMI Discovery XML.")
 
                     registers.append(Register(register_id, uom, suffix))
 

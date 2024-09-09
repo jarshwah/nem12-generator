@@ -101,9 +101,7 @@ class MeterDataNotification:
         self.interval_data = etree.SubElement(self.transaction_type, "CSVIntervalData")
         self.interval_data.text = csv_interval_data
 
-        self.trans_participant = etree.SubElement(
-            self.transaction_type, "ParticipantRole"
-        )
+        self.trans_participant = etree.SubElement(self.transaction_type, "ParticipantRole")
 
         self.trans_participant_role = etree.SubElement(self.trans_participant, "Role")
         self.trans_participant_role.text = participant_role
