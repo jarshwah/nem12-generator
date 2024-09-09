@@ -6,6 +6,7 @@ import random
 import zoneinfo
 from abc import ABC, abstractmethod
 from decimal import Decimal
+from typing import Sequence
 
 from pydantic import BaseModel, Field, field_serializer
 
@@ -145,56 +146,32 @@ class Terminator(RowProducer, BaseModel):
         return (self.indicator,)
 
 
+class Nem12Data(BaseModel):
+    header: Header
+    read_data: Sequence[tuple[NmiDetails, Sequence[IntervalData]]]
+    terminator: Terminator
+
+
 def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
     end: datetime.date = datetime.date.today(),
     interval: IntervalLength = IntervalLength.FIVE_MINUTES,
 ) -> mdmt.MeterDataNotification:
-    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
-    transactions = io.StringIO(newline="")
-    writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
-
     if start > end:
         raise ValueError("Start date must be before end date")
 
-    header = Header(
-        generation_time=now_tz,
-        from_participant=meter_point.role_mdp,
-        to_participant=meter_point.role_frmp,
-    )
-    writer.writerow(header.as_row())
+    now_tz = datetime.datetime.now(tz=zoneinfo.ZoneInfo("Etc/GMT-10"))
+    nem_12_data = produce_nem12_data(meter_point, start, end, interval, now_tz)
 
-    nmi_config = "".join(reg.suffix for meter in meter_point.meters for reg in meter.registers)
-    for meter in meter_point.meters:
-        for register in meter.registers:
-            nmi_details = NmiDetails(
-                nmi=meter_point.nmi,
-                nmi_configuration=nmi_config,
-                register_id=register.register_id,
-                register_suffix=register.suffix,
-                meter_serial_number=meter.serial_number,
-                uom=register.uom,
-                interval_length=interval,
-            )
-            # Write the register details
-            writer.writerow(nmi_details.as_row())
-
-            current_date = start
-            while current_date <= end:
-                # Write the consumption data
-                interval_data = IntervalData(
-                    read_date=current_date,
-                    read_values=_generate_consumption_profile(interval.intervals()),
-                    quality_method=QualityMethod.ACTUAL,
-                    last_updated=now_tz,
-                    msats_load_time=now_tz,
-                )
-                writer.writerow(interval_data.as_row())
-                current_date += datetime.timedelta(days=1)
-    # End of file
-    terminator = Terminator()
-    writer.writerow(terminator.as_row())
+    transactions = io.StringIO(newline="")
+    writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
+    writer.writerow(nem_12_data.header.as_row())
+    for nmi_details, interval_data in nem_12_data.read_data:
+        writer.writerow(nmi_details.as_row())
+        for data in interval_data:
+            writer.writerow(data.as_row())
+    writer.writerow(nem_12_data.terminator.as_row())
 
     meter_data_file = _create_meterdata_notification(meter_point)
     meter_data_file.transactions(
@@ -206,6 +183,50 @@ def generate_nem12(
         participant_role="FRMP",
     )
     return meter_data_file
+
+
+def produce_nem12_data(
+    meter_point: MeterPoint,
+    start: datetime.date,
+    end: datetime.date,
+    interval: IntervalLength,
+    generation_time: datetime.datetime,
+) -> Nem12Data:
+    header = Header(
+        generation_time=generation_time,
+        from_participant=meter_point.role_mdp,
+        to_participant=meter_point.role_frmp,
+    )
+
+    nmi_config = "".join(reg.suffix for meter in meter_point.meters for reg in meter.registers)
+    read_data = []
+    for meter in meter_point.meters:
+        for register in meter.registers:
+            nmi_details = NmiDetails(
+                nmi=meter_point.nmi,
+                nmi_configuration=nmi_config,
+                register_id=register.register_id,
+                register_suffix=register.suffix,
+                meter_serial_number=meter.serial_number,
+                uom=register.uom,
+                interval_length=interval,
+            )
+            current_date = start
+            interval_data = []
+            while current_date <= end:
+                interval_data.append(
+                    IntervalData(
+                        read_date=current_date,
+                        read_values=_generate_consumption_profile(interval.intervals()),
+                        quality_method=QualityMethod.ACTUAL,
+                        last_updated=generation_time,
+                        msats_load_time=generation_time,
+                    )
+                )
+                current_date += datetime.timedelta(days=1)
+            read_data.append((nmi_details, interval_data))
+
+    return Nem12Data(header=header, read_data=read_data, terminator=Terminator())
 
 
 def _generate_consumption_profile(

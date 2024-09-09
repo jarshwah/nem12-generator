@@ -1,5 +1,6 @@
 import csv
 import datetime
+import zoneinfo
 from decimal import Decimal
 from io import BytesIO
 from unittest import mock
@@ -177,3 +178,164 @@ class TestTerminator:
     def test_emits_row(self):
         terminator = nem12.Terminator()
         assert terminator.as_row() == ("900",)
+
+
+class TestProduceNem12Data:
+    def test_interval_5_minutes(self):
+        now = datetime.datetime(2024, 9, 3, 12, 34, 56, tzinfo=zoneinfo.ZoneInfo("Etc/GMT-10"))
+        now_date = now.date()
+        m = MeterPoint(
+            nmi="4102335210",
+            role_mdp="ACTIVMDP",
+            role_frmp="ENERGEX",
+            meters=[
+                Meter(
+                    serial_number="701226207",
+                    registers=[
+                        Register(register_id="E1", uom="KWH", suffix="E1"),
+                        Register(register_id="B1", uom="KWH", suffix="B1"),
+                    ],
+                )
+            ],
+        )
+        data = nem12.produce_nem12_data(
+            m, now_date, now_date, nem12.IntervalLength.FIVE_MINUTES, now
+        )
+        assert data.header.indicator == "100"
+
+        (r1, [*r1_interval]), (r2, [*r2_interval]) = data.read_data
+        assert r1.indicator == "200"
+        assert r1.nmi == "4102335210"
+        assert r1.register_id == "E1"
+        assert len(r1_interval) == 1
+        for interval in r1_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 288
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
+
+        assert r2.indicator == "200"
+        assert r2.nmi == "4102335210"
+        assert r2.register_id == "B1"
+        assert len(r2_interval) == 1
+        for interval in r2_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 288
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
+
+    def test_interval_15_minutes(self):
+        now = datetime.datetime(2024, 9, 3, 12, 34, 56, tzinfo=zoneinfo.ZoneInfo("Etc/GMT-10"))
+        now_date = now.date()
+        m = MeterPoint(
+            nmi="4102335210",
+            role_mdp="ACTIVMDP",
+            role_frmp="ENERGEX",
+            meters=[
+                Meter(
+                    serial_number="701226207",
+                    registers=[
+                        Register(register_id="E1", uom="KWH", suffix="E1"),
+                        Register(register_id="B1", uom="KWH", suffix="B1"),
+                    ],
+                )
+            ],
+        )
+        data = nem12.produce_nem12_data(
+            m, now_date, now_date, nem12.IntervalLength.FIFTEEN_MINUTES, now
+        )
+        assert data.header.indicator == "100"
+
+        (r1, [*r1_interval]), (r2, [*r2_interval]) = data.read_data
+        assert r1.indicator == "200"
+        assert r1.nmi == "4102335210"
+        assert r1.register_id == "E1"
+        assert len(r1_interval) == 1
+        for interval in r1_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 96
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
+
+        assert r2.indicator == "200"
+        assert r2.nmi == "4102335210"
+        assert r2.register_id == "B1"
+        assert len(r2_interval) == 1
+        for interval in r2_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 96
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
+
+    def test_interval_30_minutes(self):
+        now = datetime.datetime(2024, 9, 3, 12, 34, 56, tzinfo=zoneinfo.ZoneInfo("Etc/GMT-10"))
+        now_date = now.date()
+        m = MeterPoint(
+            nmi="4102335210",
+            role_mdp="ACTIVMDP",
+            role_frmp="ENERGEX",
+            meters=[
+                Meter(
+                    serial_number="701226207",
+                    registers=[
+                        Register(register_id="E1", uom="KWH", suffix="E1"),
+                        Register(register_id="B1", uom="KWH", suffix="B1"),
+                    ],
+                )
+            ],
+        )
+        data = nem12.produce_nem12_data(
+            m, now_date, now_date, nem12.IntervalLength.THIRTY_MINUTES, now
+        )
+        assert data.header.indicator == "100"
+
+        (r1, [*r1_interval]), (r2, [*r2_interval]) = data.read_data
+        assert r1.indicator == "200"
+        assert r1.nmi == "4102335210"
+        assert r1.register_id == "E1"
+        assert len(r1_interval) == 1
+        for interval in r1_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 48
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
+
+        assert r2.indicator == "200"
+        assert r2.nmi == "4102335210"
+        assert r2.register_id == "B1"
+        assert len(r2_interval) == 1
+        for interval in r2_interval:
+            assert interval.read_date == now_date
+            assert len(interval.read_values) == 48
+            assert interval.quality_method == nem12.QualityMethod.ACTUAL
+            assert interval.last_updated == now
+            assert interval.msats_load_time == now
+            value: Decimal
+            for value in interval.read_values:
+                assert len(str(value).split(".")[0]) == 1
+                assert len(str(value).split(".")[1]) == 4
