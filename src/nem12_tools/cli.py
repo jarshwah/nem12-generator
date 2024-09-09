@@ -3,7 +3,7 @@ from typing import IO
 
 import click
 
-from nem12_tools.generators.nem12 import generate_nem12
+from nem12_tools.generators import nem12
 from nem12_tools.parsers.nmid import from_nmidiscovery
 
 
@@ -41,7 +41,7 @@ def generate(
     meter_config = from_nmidiscovery(nmi_discovery_file.read())
     if frmp:
         meter_config.role_frmp = frmp
-    meter_data_transaction = generate_nem12(
+    meter_data_transaction = nem12.generate_nem12(
         meter_config, from_date.date(), to_date.date()
     )
     meter_data_transaction.tree.write(
