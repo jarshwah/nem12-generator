@@ -23,9 +23,7 @@ def test_nem12():
     )
     notification = nem12.generate_nem12(m)
     xml_file = BytesIO()
-    notification.tree.write(
-        xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
-    )
+    notification.tree.write(xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8")
 
     root = etree.fromstring(xml_file.getvalue())
     assert root.findtext("./Header/From") == "ACTIVMDP"
@@ -76,9 +74,7 @@ def test_multiple_dates():
         m, start=datetime.date(2024, 1, 1), end=datetime.date(2024, 1, 2)
     )
     xml_file = BytesIO()
-    notification.tree.write(
-        xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
-    )
+    notification.tree.write(xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8")
 
     root = etree.fromstring(xml_file.getvalue())
     csv_data = root.findtext(".//CSVIntervalData")
@@ -90,6 +86,7 @@ def test_multiple_dates():
     assert next(reader)[0] == "300"
     assert next(reader)[0] == "300"
     assert next(reader)[0] == "900"
+
 
 def test_interval_15():
     m = MeterPoint(
@@ -105,9 +102,7 @@ def test_interval_15():
     )
     notification = nem12.generate_nem12(m, interval=nem12.IntervalLength.FIFTEEN_MINUTES)
     xml_file = BytesIO()
-    notification.tree.write(
-        xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8"
-    )
+    notification.tree.write(xml_file, pretty_print=True, xml_declaration=True, encoding="utf-8")
 
     root = etree.fromstring(xml_file.getvalue())
     csv_data = root.findtext(".//CSVIntervalData")
@@ -118,3 +113,11 @@ def test_interval_15():
     row_300 = next(reader)
     assert row_300[0] == "300"
     assert len(row_300) == 103
+
+
+class TestHeader:
+    def test_emits_row(self):
+        now = datetime.datetime.now()
+        now_formatted = now.strftime("%Y%m%d%H%M")
+        header = nem12.Header(generation_time=now, from_participant="A", to_participant="B")
+        assert header.as_row() == ("100", "NEM12", now_formatted, "A", "B")

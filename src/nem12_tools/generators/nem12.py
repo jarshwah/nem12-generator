@@ -3,9 +3,11 @@ import datetime
 import enum
 import io
 import random
+from abc import ABC, abstractmethod
 from decimal import Decimal
 
 import zoneinfo
+from pydantic import BaseModel, Field, field_serializer
 
 from nem12_tools.parsers.nmid import MeterPoint
 
@@ -29,6 +31,33 @@ class QualityMethod(enum.StrEnum):
     PERMANENT_SUBSTITUTE = "F"
 
 
+class RowProducer(ABC):
+    @abstractmethod
+    def as_row(self) -> tuple[str, ...]: ...
+
+
+class Header(RowProducer, BaseModel):
+    indicator: str = "100"
+    version: str = "NEM12"
+    generation_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    from_participant: str
+    to_participant: str
+
+    @field_serializer("generation_time")
+    def serialize_generation_time(self, generation_time: datetime.datetime) -> str:
+        return generation_time.strftime("%Y%m%d%H%M")
+
+    def as_row(self) -> tuple[str, ...]:
+        data = self.model_dump()
+        return (
+            data["indicator"],
+            data["version"],
+            data["generation_time"],
+            data["from_participant"],
+            data["to_participant"],
+        )
+
+
 def generate_nem12(
     meter_point: MeterPoint,
     start: datetime.date = datetime.date.today(),
@@ -39,23 +68,17 @@ def generate_nem12(
     transactions = io.StringIO(newline="")
     writer = csv.writer(transactions, delimiter=",", lineterminator="\n")
 
-    # Header Row
-    writer.writerow(
-        (
-            "100",
-            "NEM12",
-            now_tz.strftime("%Y%m%d%H%M"),
-            meter_point.role_mdp,
-            meter_point.role_frmp,
-        )
-    )
-
     if start > end:
         raise ValueError("Start date must be before end date")
 
-    nmi_config = "".join(
-        reg.suffix for meter in meter_point.meters for reg in meter.registers
+    header = Header(
+        generation_time=now_tz,
+        from_participant=meter_point.role_mdp,
+        to_participant=meter_point.role_frmp,
     )
+    writer.writerow(header.as_row())
+
+    nmi_config = "".join(reg.suffix for meter in meter_point.meters for reg in meter.registers)
     for meter in meter_point.meters:
         for register in meter.registers:
             # Write the register details
